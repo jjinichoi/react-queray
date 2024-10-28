@@ -8,18 +8,38 @@ const featchSuperHeroes = async () => {
 };
 
 export const RQSuperHeroesPage = () => {
-  //첫번째 인자: 이 쿼리를 식별하는 고유 키 (캐시에서 데이터를 관리하는 기준이 됨)
-  //두번째 인자: 데이터를 가져오는 비동기 함수 (콜백 함수)
-  //캐시 는 react-query가 데이터를 저장하고 관리하는 메모리 영역(react-query의 캐시는 브라우저 메모리 안에 저장)
-  // 캐시는 메모리 기반으로 동작하며, useQuery로 동일한 쿼리를 다시 요청할 때, 캐시에 있는 데이터를 우선적으로 사용하고, 필요하면 서버에서 새 데이터를 가져온다.useState에 data를 담았던 이전 방식과 달리
-  // react-query는 컴포넌트에서 데이터를 가져오는것을 단순화해주고, sate변수를 따로 관리할 필요가 없어진다.
-  const { isLoading, data } = useQuery({
+  // refetchInterval (기본값 false): 정기적으로 데이터를 가져오는 프로세스를 나타낸다.  (Polling 방식)
+  // 예를 들어 매초 데이터를 가져오고 싶은 다양한 주식의 실시간 가격을 표시하는 구성이 있는경우
+
+  // number type으로 ms 단위로 주기를 설정한다.
+
+  // refetchInterval를 사용하면 refetchOnMount, refetchOnWindowFocus 가 중지되기 때문에 refetchOnMount, refetchOnWindowFocus 상관없이 UI가 refetchInterval에 정해논대로 원격 데이터와 동기화되도록 한다.
+
+  // refetchIntervalInBackground (기본값 false)
+  // true로 설정하면, refetchInterval로 설정된 쿼리는 탭/창이 백그라운드에 있을 때도 계속해서 재조회된다.
+
+  // Polling(폴링)은 주기적으로 서버에 요청을 보내서 데이터를 가져오는 방식
+
+  const { isLoading, isError, error, isFetching, data } = useQuery({
     queryKey: ["super-heroes"],
     queryFn: featchSuperHeroes,
+    // gcTime: 5000,
+    // staleTime: 30000,
+    // refetchInterval: 2000,
+    // refetchIntervalInBackground: true,
+    // 위에 refetch~와 상생하지 못함
+    // refetchOnMount: true,
+    // refetchOnWindowFocus: true,
   });
+
+  console.log({ isLoading, isFetching });
 
   if (isLoading) {
     return <h2>Loading...</h2>;
+  }
+
+  if (isError) {
+    return <h2>{error.message}</h2>;
   }
 
   return (
